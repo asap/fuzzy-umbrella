@@ -1,0 +1,28 @@
+{
+  "name": "fuzzy-umbrella",
+  "version": "1.0.0",
+  "description": "Google Analytics SDK",
+  "main": ".src/index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "jasmine",
+    "watch": "nodemon --exec jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asap/fuzzy-umbrella.git"
+  },
+  "author": "asap",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/asap/fuzzy-umbrella/issues"
+  },
+  "homepage": "https://github.com/asap/fuzzy-umbrella#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "jasmine": "^3.3.1",
+    "nodemon": "^1.18.10"
+  }
+}
