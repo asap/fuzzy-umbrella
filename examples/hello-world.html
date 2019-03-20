@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Hello World</title>
+    <script src="../build/fuzzy-umbrella.sdk.js"></script>
+  </head>
+
+  <body>
+    <header><h1>Hello World</h1></header>
+
+    <section>
+      <article>
+        <header><h2>Article title</h2></header>
+        <p>
+          Pellentesque habitant morbi tristique senectus et netus et malesuada
+          fames ac turpis egestas.
+        </p>
+      </article>
+
+      <article>
+        <header><h2>Article title</h2></header>
+        <p>
+          Pellentesque habitant morbi tristique senectus et netus et malesuada
+          fames ac turpis egestas.
+        </p>
+      </article>
+    </section>
+
+    <aside>
+      <h2>About section</h2>
+      <p>
+        Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae
+        est. Mauris placerat eleifend leo.
+      </p>
+    </aside>
+
+    <button class="js-click-me">Fire Tracking Event</button>
+
+    <footer><p>Copyright 2019 ASAP</p></footer>
+    <script>
+      (function(trackingId) {
+        window.fuz = FuzzyUmbrella({
+          trackingId: trackingId,
+          debug: true
+        });
+      })('ENTER GOOGLE ANALYTICS TRACKING ID');
+
+      fuz.trackPageView('helloworld.localhost', '/hello-world', 'Hello World');
+
+      var eventButton = document.querySelector('.js-click-me');
+      eventButton.addEventListener('click', function () {
+        console.log('button clicked');
+        fuz.trackEvent('Button', 'Click', 'Interaction', '124');
+      }, false);
+    </script>
+  </body>
+</html>
