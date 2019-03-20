@@ -1,18 +1,36 @@
+// const axios = require('axios');
+// const MockAdapter = require('axios-mock-adapter');
+// const mock = new MockAdapter(axios);
+
 const FuzzyUmbrella = require('../src');
+
 const config = {
-  apikey: 'APIKEY',
   clientId: '1234',
-  trackingId: '1111',
+  trackingId: 'UA-8179813-3',
 };
 
 describe('FuzzyUmbrella', () => {
   let fuz;
   beforeEach(() => {
     fuz = new FuzzyUmbrella(config);
+
+    // const mockURL = /^https:\/\/google-analytics.com\//;
+    //
+    // mock.onGet(mockURL).reply(200, {
+    //   status: 'mocked!',
+    // });
+
   });
   describe('#trackPageViews', () => {
     it('should track pageviews', () => {
-      expect(fuz.trackPageView()).toBeTruthy();
+      expect(
+        fuz.trackPageView('mysite.com', '/somepage', 'Some Random Page'),
+      ).toBeTruthy();
+    });
+    it('should require params', () => {
+      expect(() => {
+        fuz.trackPageView();
+      }).toThrow(new Error('Missing Pageview Parameters'));
     });
   });
 
@@ -53,9 +71,9 @@ describe('FuzzyUmbrella', () => {
       expect(fuz.buildUrl(invalidParams)).not.toContain('undefined');
     });
 
-    it('should ignores unknown params', () => {
+    xit('should ignores unknown params', () => {
       const invalidParams = {
-        bacon: 'tasty'
+        bacon: 'tasty',
       };
       expect(fuz.buildUrl(invalidParams)).not.toContain('tasty');
     });

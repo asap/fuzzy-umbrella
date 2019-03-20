@@ -7,6 +7,8 @@
     "example": "examples"
   },
   "scripts": {
+    "dev": "webpack --mode development --watch",
+    "build": "webpack --mode production",
     "test": "jasmine",
     "watch": "nodemon --exec jasmine"
   },
@@ -20,9 +22,20 @@
     "url": "https://github.com/asap/fuzzy-umbrella/issues"
   },
   "homepage": "https://github.com/asap/fuzzy-umbrella#readme",
-  "dependencies": {},
+  "dependencies": {
+    "@babel/runtime": "^7.4.0",
+    "axios": "^0.18.0",
+    "uuid": "^3.3.2"
+  },
   "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/polyfill": "^7.2.5",
+    "@babel/preset-env": "^7.3.4",
+    "axios-mock-adapter": "^1.16.0",
+    "babel-loader": "^8.0.5",
     "jasmine": "^3.3.1",
-    "nodemon": "^1.18.10"
+    "nodemon": "^1.18.10",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
   }
 }
