@@ -17,6 +17,7 @@ Google Analytics API SDK
 * run `npm run build` will create/update sdk in `/build` folder
 * copy `/build/fuzzy-umbrella.sdk.js` to your project
 * include the following snippet in your html body:
+* **Please make sure you put in your own Tracking ID**
 
 ```
   // HMTL HEAD
