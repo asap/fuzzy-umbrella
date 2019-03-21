@@ -7,17 +7,20 @@ const BATCH_RETRY = 3 * 1000; // seconds
 
 class FuzzyUmbrella {
   constructor(config) {
-    const { debug, trackingId: tid, clientId: cid } = config;
+    const { debug, trackingId: tid, clientId: cid, window: _window } = config;
 
+    this.activeBatch = [];
     this.batch = [];
+    this.isRetrying = false;
     this.tid = tid;
     this.cid = cid || uuidv4();
     this.debug = debug || false;
     this.timeout;
+    this.window = _window || window;
 
-    window.onfocus = () => {
+    this.window.onfocus = () => {
       this.flushBatch();
-    }
+    };
 
     this.log('Initialized Fuzzy Umbrella', this);
   }
@@ -36,8 +39,6 @@ class FuzzyUmbrella {
     // &dp=/home        // Page.
     // &dt=homepage     // Title.
 
-    // console.log('tid', this.tid);
-
     const params = {
       t: 'pageview',
       dh: hostname,
@@ -50,7 +51,7 @@ class FuzzyUmbrella {
 
   trackEvent(category, action, label, value) {
     if (!category || !action) {
-      throw new Error('Missing Pageview Parameters');
+      throw new Error('Missing Event Parameters');
     }
     // v=1              // Version.
     // &tid=UA-XXXXX-Y  // Tracking ID / Property ID.
@@ -78,30 +79,47 @@ class FuzzyUmbrella {
     const query = this.combineParams(params);
     this.batch.push(query);
     this.log('batch updated', this.batch);
-    if (this.batch.length > BATCH_LENGTH - 1) {
+    if (this.batch.length > BATCH_LENGTH - 1 && !this.isRetrying) {
+      // Break up requests to be under BATCH_LENGTH
+      // in case we've been offline for a bit
+      this.activeBatch = this.batch.splice(0, BATCH_LENGTH);
       this.flushBatch();
     }
   }
 
   clearRetry() {
+    this.isRetrying = false;
     clearTimeout(this.timeout);
-    // clearTimeout(window.fuzzyTimer);
   }
 
   clearBatch() {
-    this.batch = [];
-    this.log('batch cleared', this.batch);
+    this.activeBatch = [];
+    this.log('active batch cleared', this.activeBatch);
   }
 
   flushBatch() {
-    const batchQueryParams = this.batch.join('\r\n');
+    if (this.activeBatch.length === 0 && this.batch.length === 0) {
+      this.log('batch are empty. skipping');
+      return;
+    }
+
+    if (this.activeBatch.length === 0 && this.batch.length !== 0) {
+      // Maybe start purging backlog
+      this.log('active batch empty. clearing backlog');
+      this.activeBatch = this.batch.splice(0, BATCH_LENGTH);
+    }
+
+    const batchQueryParams = this.activeBatch.join('\r\n');
     this.fireTracker(batchQueryParams);
+    this.log('active', this.activeBatch);
+    this.log('full', this.batch);
   }
 
   fireTracker(params) {
     const url = this.buildUrl(params);
     this.log('queryParams', params);
     this.log('fire', url);
+    this.log('isRetrying?', this.isRetrying);
 
     return axios
       .post(url)
@@ -115,7 +133,7 @@ class FuzzyUmbrella {
         return data;
       })
       .catch(error => {
-        console.error(error);
+        this.log('Network Error', error);
 
         // Retry batch if we're offline
         this.retryFlushBatch();
@@ -124,7 +142,8 @@ class FuzzyUmbrella {
 
   retryFlushBatch() {
     this.clearRetry();
-    this.timeout = setTimeout(()=> {
+    this.isRetrying = true;
+    this.timeout = setTimeout(() => {
       this.log('possibly offline. retrying batch');
       this.flushBatch();
     }, BATCH_RETRY);
