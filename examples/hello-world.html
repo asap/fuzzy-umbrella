@@ -53,7 +53,10 @@
       var eventButton = document.querySelector('.js-click-me');
       eventButton.addEventListener('click', function () {
         console.log('button clicked');
-        fuz.trackEvent('Button', 'Click', 'Interaction', '124');
+
+        // Random id attached to button so we can see all the events
+        var random = Math.floor(Math.random() * Math.floor(999));
+        fuz.trackEvent('Button', 'Click', 'Interaction-' + random, random);
       }, false);
     </script>
   </body>

@@ -116,28 +116,31 @@ class FuzzyUmbrella {
   }
 
   fireTracker(params) {
-    const url = this.buildUrl(params);
     this.log('queryParams', params);
-    this.log('fire', url);
+    this.log('fire', URL_PREFIX);
     this.log('isRetrying?', this.isRetrying);
 
-    return axios
-      .post(url)
-      .then(data => {
-        this.log('response', data);
+    return (
+      axios
+        .post(URL_PREFIX, params, {
+          headers: { 'Content-Type': 'text/plain' },
+        })
+        .then(data => {
+          this.log('response', data);
 
-        // Clearout retry in case we're back online
-        this.clearRetry();
-        this.clearBatch();
+          // Clearout retry in case we're back online
+          this.clearRetry();
+          this.clearBatch();
 
-        return data;
-      })
-      .catch(error => {
-        this.log('Network Error', error);
+          return data;
+        })
+        .catch(error => {
+          this.log('Network Error', error);
 
-        // Retry batch if we're offline
-        this.retryFlushBatch();
-      });
+          // Retry batch if we're offline
+          this.retryFlushBatch();
+        })
+    );
   }
 
   retryFlushBatch() {
@@ -166,7 +169,7 @@ class FuzzyUmbrella {
   }
 
   buildUrl(params) {
-    return `${URL_PREFIX}?${params}`;
+    return `${URL_PREFIX}`;
   }
 
   log(message, object = null) {
